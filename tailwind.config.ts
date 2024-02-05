@@ -6,7 +6,17 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        /* yu colors */
+        "yu-orange-dark": "#f68939",
+        /* google colors */
+        "google-blue": "#5C9EFF",
+        "google-red": "#F25C4E",
+        "google-yellow": "#FFC247",
+        "google-green": "#33C075",
+      },
+    },
   },
   plugins: [],
 };
