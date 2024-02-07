@@ -10,7 +10,7 @@ import GoogleButton from "@/components/temp/google_button";
 export default function Building({ params }: { params: { building: string } }) {
   let cornersArray: string[] = [];
   if (params.building === Buildings.Najd) {
-    redirect("/najd/D");
+    redirect("/building/najd/D");
   } else if (params.building === Buildings.Tuwaiq) {
     cornersArray = tuwaiqCorners;
   } else if (params.building === Buildings.Main) {
@@ -27,7 +27,7 @@ export default function Building({ params }: { params: { building: string } }) {
             <GoogleButton
               text={`${corner} corner`}
               color={GoogleColor.Blue}
-              href={`/${params.building}/${corner}`}
+              href={`/building/${params.building}/${corner}`}
               ariaLabel={`Go to ${corner} corner`}
             />
           );

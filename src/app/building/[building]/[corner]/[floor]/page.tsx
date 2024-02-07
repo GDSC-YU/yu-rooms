@@ -16,7 +16,7 @@ export default function Floor({
         {currentFloorArray.map((room) => {
           return (
             <GoogleButton
-              href={`/${params.building}/${params.corner}/${params.floor}/${room}`}
+              href={`/building/${params.building}/${params.corner}/${params.floor}/${room}`}
               color={GoogleColor.Red}
               ariaLabel="go to the room you clicked on"
               text={room}

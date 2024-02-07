@@ -10,7 +10,7 @@ export default function Room({
   return (
     <SchedulePage
       room={rooms[params.room]}
-      backLink={`/${params.building}/${params.corner}/${params.floor}`}
+      backLink={`/building/${params.building}/${params.corner}/${params.floor}`}
     ></SchedulePage>
   );
 }
