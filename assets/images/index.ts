@@ -7,4 +7,7 @@ import yuLogo from "./yu-logo.svg";
 import mainBulding from "./main-building.png";
 import tuwaiq from "./tuwaiq.png";
 
-export { bgImage1, bgImage2, bgImage3, yuLogo, mainBulding, tuwaiq, Gdscyu };
+
+import GoogleBg from "./Background.svg";
+
+export { bgImage1, bgImage2, bgImage3, yuLogo, mainBulding, tuwaiq, Gdscyu, GoogleBg};

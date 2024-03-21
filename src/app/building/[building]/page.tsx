@@ -6,6 +6,10 @@ import {
   Buildings,
   GoogleColor,
 } from "@/constants/constants";
+
+import Image from "next/image";
+
+import { GoogleBg } from "../../../../assets/images";
 import GoogleButton from "@/components/temp/google_button";
 export default function Building({ params }: { params: { building: string } }) {
   let cornersArray: string[] = [];
@@ -18,13 +22,14 @@ export default function Building({ params }: { params: { building: string } }) {
   }
   return (
     <main>
+     
       <h1 className="text-center text-2xl font-bold">
         {params.building.toUpperCase()}
       </h1>
       <div className="flex gap-6">
         {cornersArray.map((corner) => {
           return (
-            <GoogleButton
+            <GoogleButton 
               text={`${corner} corner`}
               color={GoogleColor.Blue}
               href={`/building/${params.building}/${corner}`}
@@ -33,6 +38,7 @@ export default function Building({ params }: { params: { building: string } }) {
           );
         })}
       </div>
+      
     </main>
   );
 }
