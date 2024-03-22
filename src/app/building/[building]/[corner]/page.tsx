@@ -8,6 +8,7 @@ export default function corner({
 }) {
   return (
     <main>
+      
       <p>
         You are in building {params.building} and corner {params.corner}
       </p>
