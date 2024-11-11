@@ -1,6 +1,5 @@
-import "./App.css";
-import { rooms } from "./assets/data/rooms";
-import SchedulePage from "./components/schedule/SchedulePage";
+import { rooms } from "../assets/data/rooms";
+import SchedulePage from "../components/schedule/SchedulePage";
 
 function App() {
   return (
