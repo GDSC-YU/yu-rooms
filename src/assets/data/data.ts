@@ -76,3 +76,13 @@ export const getDays = (room: Room) => {
     { day: "Thursday", key: Day.Thursday, timeSlots: room.thursday },
   ];
 };
+
+export const clubs = [
+  { value: "GDG", label: "Google Developors Group" },
+  { value: "TakeOne", label: "Take One" },
+];
+
+export const eventRooms = [
+  { value: "Tuwaiq Auditorium", label: "Tuwaiq Auditorium" },
+  { value: "F009", label: "F009" },
+];
