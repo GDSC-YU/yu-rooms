@@ -8,20 +8,26 @@ import { CustomEvent } from "@/assets/types";
 
 export default function EventForm({
   setBookings,
+  departments,
+  setDepartments,
+  room,
+  setRoom,
   startTime = null,
   endTime = null,
   isEventOpen = false,
   eventData = null,
 }: {
   setBookings: React.Dispatch<React.SetStateAction<CustomEvent[]>>;
+  departments: string[];
+  setDepartments: React.Dispatch<React.SetStateAction<string[]>>;
+  room: string;
+  setRoom: React.Dispatch<React.SetStateAction<string>>;
   startTime?: Date | null;
   endTime?: Date | null;
   isEventOpen?: boolean;
   eventData?: CustomEvent | null;
 }) {
   const [eventName, setEventName] = useState<string>();
-  const [departments, setDepartments] = useState<string[]>([]);
-  const [room, setRoom] = useState<string>();
   const [startDate, setStartDate] = useState<Date>(moment().toDate());
   const [endDate, setEndDate] = useState<Date>(
     moment(Date.now()).add(1, "h").toDate()
@@ -31,7 +37,7 @@ export default function EventForm({
     if (!isEventOpen && startTime && endTime) {
       if (startTime.getHours() === 0 && endTime.getHours() === 0) {
         setStartDate(moment(startTime).set({ hour: 12 }).toDate());
-        setEndDate(moment(endTime).set({ hour: 13 }).toDate());
+        setEndDate(moment(startTime).set({ hour: 13 }).toDate());
       } else {
         setStartDate(startTime);
         setEndDate(endTime);
@@ -41,18 +47,17 @@ export default function EventForm({
 
   useEffect(() => {
     if (eventData) {
+      console.log("setting event Data");
+      console.log(room);
       setEventName(eventData.title as string);
       setDepartments(eventData.departments);
       setRoom(eventData.room);
       setStartDate(eventData.start as Date);
       setEndDate(eventData.end as Date);
+      console.log(eventData);
+      console.log(room);
     }
-  }, [eventData]);
-
-  useEffect(() => {
-    setDepartments([]);
-    setRoom("");
-  }, []);
+  }, [eventData, room, departments, setDepartments, setRoom]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,21 +70,40 @@ export default function EventForm({
     if (!eventName || !departments || !room || !startDate || !endDate) {
       return;
     }
+    if (!isEventOpen) {
+      setBookings((oldBookings) => {
+        return [
+          ...oldBookings,
+          {
+            id: Date.now(),
+            title: eventName,
+            start: startDate,
+            end: endDate,
+            departments: departments,
+            room: room,
+            bookedBy: "John Doe",
+          },
+        ];
+      });
+    }
+    if (isEventOpen) {
+      setBookings((oldBookings) =>
+        oldBookings.map((event) => {
+          if (event.id === eventData?.id) {
+            return {
+              ...event,
+              title: eventName,
+              start: startDate,
+              end: endDate,
+              departments: departments,
+              room: room,
+            };
+          }
+          return event;
+        })
+      );
+    }
 
-    setBookings((oldBookings) => {
-      return [
-        ...oldBookings,
-        {
-          id: Date.now(),
-          title: eventName,
-          start: startDate,
-          end: endDate,
-          departments: departments,
-          room: room,
-          bookedBy: "John Doe",
-        },
-      ];
-    });
     console.log("setting values to null");
     setEventName("");
     setDepartments([]);
@@ -87,6 +111,14 @@ export default function EventForm({
     setStartDate(moment().toDate());
     setEndDate(moment(Date.now()).add(1, "h").toDate());
     (e.target as HTMLFormElement).reset();
+  };
+
+  const deleteEvent = () => {
+    if (eventData) {
+      setBookings((oldBookings) =>
+        oldBookings.filter((event) => event.id !== eventData?.id)
+      );
+    }
   };
 
   console.log("rendering form");
@@ -153,7 +185,10 @@ export default function EventForm({
           options={eventRooms}
           classNamePrefix="select"
           placeholder="Select Room"
-          value={eventRooms.filter((eventRoom) => eventRoom.value === room)}
+          isClearable
+          value={
+            eventRooms.find((eventRoom) => eventRoom.value === room) || null
+          }
           onChange={(e) => e && setRoom(e.value)}
         />
       </div>
@@ -205,13 +240,20 @@ export default function EventForm({
           name="endDate"
         />
       </div>
-
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
         type="submit"
       >
-        Create Event
+        {isEventOpen ? "Save Changes" : "Create Event"}
       </button>
+      {isEventOpen && (
+        <button
+          className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          onClick={deleteEvent}
+        >
+          Delete Event
+        </button>
+      )}
     </form>
   );
 }

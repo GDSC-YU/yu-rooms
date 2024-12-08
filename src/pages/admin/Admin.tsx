@@ -14,7 +14,7 @@ const events: CustomEvent[] = [
     start: moment("2024-11-17T14:00:00").toDate(),
     end: moment("2024-11-17T15:30:00").toDate(),
     departments: ["GDG"],
-    room: "F001",
+    room: "F009",
     bookedBy: "John Doe",
   },
 ];
@@ -25,6 +25,8 @@ export default function Admin() {
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [isEventOpen, setIsEventOpen] = useState(false);
   const [eventData, setEventData] = useState<CustomEvent | null>(null);
+  const [departments, setDepartments] = useState<string[]>([]);
+  const [room, setRoom] = useState<string>("");
 
   const closeDialog = () => {
     if (dialogRef.current && dialogRef.current.open) {
@@ -32,6 +34,9 @@ export default function Admin() {
       dialogRef.current.close();
       setIsEventOpen(false);
       setEventData(null);
+      setDepartments([]);
+      setRoom("");
+      console.log("room set to null");
     }
   };
 
@@ -64,6 +69,10 @@ export default function Admin() {
             <div className="relative z-0">
               <EventForm
                 setBookings={setBookings}
+                departments={departments}
+                setDepartments={setDepartments}
+                room={room}
+                setRoom={setRoom}
                 startTime={startTime}
                 endTime={endTime}
                 isEventOpen={isEventOpen}
