@@ -5,9 +5,10 @@ import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomEvent } from "@/assets/types";
+import { collection, addDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
+import { db } from "@/config/firestore";
 
 export default function EventForm({
-  setBookings,
   departments,
   setDepartments,
   room,
@@ -16,8 +17,8 @@ export default function EventForm({
   endTime = null,
   isEventOpen = false,
   eventData = null,
+  getEmployees,
 }: {
-  setBookings: React.Dispatch<React.SetStateAction<CustomEvent[]>>;
   departments: string[];
   setDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   room: string;
@@ -26,6 +27,7 @@ export default function EventForm({
   endTime?: Date | null;
   isEventOpen?: boolean;
   eventData?: CustomEvent | null;
+  getEmployees: () => void;
 }) {
   const [eventName, setEventName] = useState<string>();
   const [startDate, setStartDate] = useState<Date>(moment().toDate());
@@ -59,6 +61,36 @@ export default function EventForm({
     }
   }, [eventData, room, departments, setDepartments, setRoom]);
 
+  const addEvent = async () => {
+    try {
+      await addDoc(collection(db, "events"), {
+        title: eventName,
+        start: moment(startDate).format("YYYY-MM-DDTHH:mm:ss"),
+        end: moment(endDate).format("YYYY-MM-DDTHH:mm:ss"),
+        departments: departments,
+        room: room,
+        bookedBy: "John Doe",
+      });
+      getEmployees();
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+
+  const updateEvent = async () => {
+    if (eventData) {
+      await setDoc(doc(db, "events", eventData.id), {
+        title: eventName,
+        start: moment(startDate).format("YYYY-MM-DDTHH:mm:ss"),
+        end: moment(endDate).format("YYYY-MM-DDTHH:mm:ss"),
+        departments: departments,
+        room: room,
+        bookedBy: eventData.bookedBy,
+      });
+      getEmployees();
+    }
+  };
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -71,37 +103,10 @@ export default function EventForm({
       return;
     }
     if (!isEventOpen) {
-      setBookings((oldBookings) => {
-        return [
-          ...oldBookings,
-          {
-            id: Date.now(),
-            title: eventName,
-            start: startDate,
-            end: endDate,
-            departments: departments,
-            room: room,
-            bookedBy: "John Doe",
-          },
-        ];
-      });
+      addEvent();
     }
     if (isEventOpen) {
-      setBookings((oldBookings) =>
-        oldBookings.map((event) => {
-          if (event.id === eventData?.id) {
-            return {
-              ...event,
-              title: eventName,
-              start: startDate,
-              end: endDate,
-              departments: departments,
-              room: room,
-            };
-          }
-          return event;
-        })
-      );
+      updateEvent();
     }
 
     console.log("setting values to null");
@@ -113,11 +118,14 @@ export default function EventForm({
     (e.target as HTMLFormElement).reset();
   };
 
-  const deleteEvent = () => {
+  const deleteEvent = async () => {
     if (eventData) {
-      setBookings((oldBookings) =>
-        oldBookings.filter((event) => event.id !== eventData?.id)
-      );
+      try {
+        await deleteDoc(doc(db, "events", eventData.id));
+        getEmployees();
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+      }
     }
   };
 

@@ -4,29 +4,41 @@ import { useEffect, useRef, useState } from "react";
 import { XIcon } from "lucide-react";
 import EventForm from "@/components/EventForm";
 import { CustomEvent } from "@/assets/types";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firestore";
 
 const localizer = momentLocalizer(moment);
 
-const events: CustomEvent[] = [
-  {
-    id: Date.now(),
-    title: "All Day Event very long title",
-    start: moment("2024-11-17T14:00:00").toDate(),
-    end: moment("2024-11-17T15:30:00").toDate(),
-    departments: ["GDG"],
-    room: "F009",
-    bookedBy: "John Doe",
-  },
-];
-
 export default function Admin() {
-  const [bookings, setBookings] = useState<CustomEvent[]>(events);
+  const [bookings, setBookings] = useState<CustomEvent[]>([]);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [isEventOpen, setIsEventOpen] = useState(false);
   const [eventData, setEventData] = useState<CustomEvent | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
   const [room, setRoom] = useState<string>("");
+
+  const getEmployees = async () => {
+    const querySnapshot = await getDocs(collection(db, "events"));
+    const events: CustomEvent[] = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title,
+        start: moment(data.start).toDate(),
+        end: moment(data.end).toDate(),
+        departments: data.departments || [],
+        room: data.room,
+        bookedBy: data.bookedBy,
+      };
+    });
+    console.log(events);
+    setBookings(events);
+  };
+
+  useEffect(() => {
+    getEmployees();
+  }, []);
 
   const closeDialog = () => {
     if (dialogRef.current && dialogRef.current.open) {
@@ -68,7 +80,6 @@ export default function Admin() {
           <div>
             <div className="relative z-0">
               <EventForm
-                setBookings={setBookings}
                 departments={departments}
                 setDepartments={setDepartments}
                 room={room}
@@ -77,6 +88,7 @@ export default function Admin() {
                 endTime={endTime}
                 isEventOpen={isEventOpen}
                 eventData={eventData}
+                getEmployees={getEmployees}
               />
             </div>
             <button
@@ -118,19 +130,20 @@ export default function Admin() {
             }, 10);
           }}
           views={["month", "week", "day"]}
-          components={{
-            event: ({ event }) => (
-              <div>
-                <div className="text-ellipsis overflow-hidden">
-                  {event.title}
-                  <br />
-                  Room: {event.room}
-                </div>
-              </div>
-            ),
-          }}
+          // components={{
+          //   event: ({ event }) => (
+          //     <div>
+          //       <div className="text-ellipsis overflow-hidden">
+          //         {event.title}
+          //         <br />
+          //         Room: {event.room}
+          //       </div>
+          //     </div>
+          //   ),
+          // }}
         />
       </div>
+      <button onClick={() => {}}>test button</button>
     </>
   );
 }

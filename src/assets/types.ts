@@ -1,7 +1,7 @@
 import { Event } from "react-big-calendar";
 
 export interface CustomEvent extends Event {
-  id: number;
+  id: string;
   departments: string[];
   room: string;
   bookedBy: string;
