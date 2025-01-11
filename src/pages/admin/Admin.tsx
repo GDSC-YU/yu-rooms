@@ -143,7 +143,6 @@ export default function Admin() {
           // }}
         />
       </div>
-      <button onClick={() => {}}>test button</button>
     </>
   );
 }
